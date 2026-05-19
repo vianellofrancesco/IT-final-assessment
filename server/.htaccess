@@ -1,10 +1,21 @@
+ 
+ 
+# Tutto cio' che inizia per /api/ e non è un file/dir reale va a api/index.php.
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^api(/.*)?$ api/index.php [L,QSA]
+</IfModule>
+
+# Niente directory listing.
 Options -Indexes
 
-RewriteEngine On
-
-# Consenti accesso diretto a file e cartelle esistenti
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
-
-# Tutto il resto va a index.php
-RewriteRule ^(.*)$ index.php [QSA,L]
+# Blocca accesso diretto a config/, lib/, sql/.
+<FilesMatch "\.(php|sql|log|ini)$">
+    <If "%{REQUEST_URI} =~ m#/(config|lib|sql)/#">
+        Require all denied
+    </If>
+</FilesMatch>
